@@ -14,13 +14,33 @@ export const pdfRag = async (state) => {
             data: buffer
         })
         const res = await pdf.getText()
+        const pages = res.pages || []
         const text =  res.text
 
         const splitter = new RecursiveCharacterTextSplitter({
             chunkSize:1000,
             chunkOverlap:200
         })
-        const docs = await splitter.createDocuments([text])
+        const docs = [];
+
+        if(res.pages?.length){
+            for(let i=0; i<res.pages.length; i++){
+                const pages = res.pages[1];
+
+                if(!pages.text?.trim()) continue;
+
+                const chunks = await splitter.createDocument(
+                    [pages.text],
+                    [{page: pages.num || i+1}]
+                );
+                docs.push(...chunks)
+            }
+        }else{
+            const chunks = await splitter.createDocuments([res.text]);
+            docs.push(...chunks)
+        }
+
+
         const collectionName = `pdf-${Date.now()}`
 
         const store = await vectorStore(docs, collectionName)
@@ -28,6 +48,18 @@ export const pdfRag = async (state) => {
         const releventDocs = await store.similaritySearch(state.prompt, 5)
 
         const context = releventDocs.map(d => d.pageContent).join("\n\n")
+
+        const page = [
+            ...new Set(
+                releventDocs.map(d => d.metadata?.page)
+                .filter(p => Number.isInteger(p) && p>0)
+            )
+        ].sort((a,b) => a - b);
+
+        const sources = releventDocs.length? [{
+            type:"pdf",
+            document: state.file.originalname || "uploaded PDF", page
+        }]: [];
 
         const llm = await getModel("pdfRag")
 
@@ -57,7 +89,8 @@ Rules:
 
     return {
         ...state,
-        aiResponse: response.content
+        aiResponse: response.content,
+        sources
     }
 
 

@@ -55,7 +55,7 @@ const MessageList = () => {
             console.log("MSG:", msg)
             return (
             <div key={i}>
-              <MessageBubble role={msg?.role} content={msg?.content} images={msg.images || []} />
+              <MessageBubble role={msg?.role} content={msg?.content} images={msg.images || [] } sources={msg?.sources || []} />
             </div>
             )
           })}

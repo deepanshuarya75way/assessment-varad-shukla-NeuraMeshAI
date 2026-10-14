@@ -36,12 +36,14 @@ export const agent = async(req, res, next) => {
             role:"assistant",
             content:result?.aiResponse,
             images:result?.images,
-            artifacts:result?.artifacts
+            artifacts:result?.artifacts,
+            sources: result?.sources || []
         })
         return res.status(200).json({
             answer:result?.aiResponse,
             images:result?.images,
-            artifacts:result?.artifacts
+            artifacts:result?.artifacts,
+            sources: result?.sources || []
         })
     } catch (error) {
         console.log(

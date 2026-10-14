@@ -33,6 +33,18 @@ const messageSchema = new mongoose.Schema({
     content: String,
     images:[String],
     artifacts:[artifactSchema],
+    sources:[
+      {
+        type:{
+        type:String,
+        enum:["web", "pdf"]
+      },
+      title: String,
+      url: String,
+      document: String,
+      pages: [Number]
+      },
+  ],
 },
     {
         timestamps:true

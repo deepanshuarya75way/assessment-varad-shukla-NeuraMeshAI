@@ -27,4 +27,4 @@ Thumbs.db
 
 
 temp/
-**/temp/**
+**/temp/**.env-3

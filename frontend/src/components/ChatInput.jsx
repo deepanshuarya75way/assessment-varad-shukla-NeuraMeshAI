@@ -128,6 +128,7 @@ const toggleMic = () => {
         role: "assistant",
         content: data?.answer,
         images: data?.images,
+        sources: data?.sources || []
       }),
     );
     console.log(data);

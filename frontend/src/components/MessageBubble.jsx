@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-function MessageBubble({ role, content, images }) {
+function MessageBubble({ role, content, images, sources }) {
   console.log("ROLE:", role);
   console.log("CONTENT:", content);
   const isUser = role == "user";
@@ -181,6 +181,21 @@ function MessageBubble({ role, content, images }) {
         >
           {content}
         </Markdown>
+        {role === "assistant" && sources?.length > 0 && (
+          <div classname="mt-3 border-t pt-2"> 
+            <p classname="font-semibold "> Sources </p>
+            {sources.map((s, i) => (
+              <div>{s.type === "web" && s.url && (
+                <a href={s.url} classname="text-blue-400 underline" target="_blank" rel={noreferrence}> {s.title || s.url}</a>
+              )}
+              {s.type === "pdf" && (
+                <p>{s.document} - Pages {s.pages?.join(",")} </p>
+              )}
+              
+               </div>
+            ))}
+             </div>
+        )}
       </div>
       {lightBox && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6">
